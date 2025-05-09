@@ -1,69 +1,148 @@
 \documentclass[12pt]{article}
-\usepackage{geometry}
-\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
+\usepackage{hyperref}
 \usepackage{longtable}
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
 
-\geometry{margin=1in}
-\title{Software Design Document (SDD)\\\large CS3338 Group Project}
-\author{Group 1: Aaren Quintero, Luis Ponce, Dillin Noriga, Jonathan Little, Nikole Cabera}
-\date{\today}
+\title{Software Design Document (SDD) \\
+\large LA City Sidewalk Assessment Project}
+\author{Group 1: Aaren Quintero, Luis Ponce, Dillin Noriga, \\
+Jonathan Little, Nikole Cabera \\
+CS3338 – Software Engineering}
+\date{April 25, 2025}
+
+\pagestyle{plain} % Add page numbering
 
 \begin{document}
 
 \maketitle
 
-\tableofcontents
-\newpage
+\tableofcontents % Automatically generates the table of contents
+\newpage % Starts content on a new page
 
-\section*{Versions Table}
-\begin{longtable}{|c|c|p{8cm}|}
+\section{Introduction}
+
+\subsection{Purpose}
+The LA City Sidewalk Assessment Project is a collaborative effort between software engineering and mechanical engineering teams aimed at improving sidewalk accessibility and pedestrian safety across Los Angeles. The purpose of the software component is to build a full-stack application that stores, processes, and visualizes sidewalk condition data collected by a robotic rover. The rover captures metrics such as slope, displacement, GPS location, and images. Our software enables users—city officials, engineers, and field testers—to interact with this data for analysis and infrastructure planning, particularly for ADA compliance.
+
+\subsection{Intended Audience}
+\begin{itemize}
+  \item Instructors evaluating student progress
+  \item Developers contributing to the system over multiple terms
+  \item City Planners/Officials assessing sidewalk safety and repair needs
+  \item Mechanical Engineers integrating hardware outputs into the software
+  \item Field Testers collecting live sidewalk data
+\end{itemize}
+
+\subsection{Overview}
+This document provides a technical description of the software architecture, UI components, database schema, and data integration pipeline used to support the LA City Sidewalk Assessment Project. It evolves across project snapshots to document new features and improvements.
+
+\section{System Architecture}
+
+\subsection{Workflow}
+The sidewalk assessment ecosystem includes hardware and software layers.
+
+\textbf{Hardware Layer (Rover):}
+\begin{itemize}
+  \item Controlled remotely by field testers
+  \item Captures GPS coordinates, slope measurements, vertical displacement, and images
+  \item Transmits collected data to the software system (via SD card or live upload)
+\end{itemize}
+
+\textbf{Software Workflow:}
+\begin{enumerate}
+  \item Rover collects data in the field (slope, displacement, GPS, photos)
+  \item Data is uploaded (manually or via web interface) to the software platform
+  \item Database stores sidewalk metrics with timestamp and location metadata
+  \item Web dashboard displays reports on a map with filtering tools
+  \item Admin panel allows city officials to review field data and flag non-compliant segments
+  \item Collision avoidance logs may be reviewed post-deployment for performance auditing
+\end{enumerate}
+
+\subsection{Site Breakdown}
+\begin{longtable}{|p{4cm}|p{10cm}|}
 \hline
-\textbf{Version} & \textbf{Date} & \textbf{Description} \\
+\textbf{Module} & \textbf{Function} \\
 \hline
-1.0 & YYYY-MM-DD & Initial draft \\
+Login/Register & User authentication and role-based access (admin/field tester) \\
 \hline
-1.1 & YYYY-MM-DD & Updated System Architecture \\
+Upload Data & Interface for uploading CSV/image files from rover \\
+\hline
+Map Dashboard & Interactive map plotting sidewalk data by severity, slope, and location \\
+\hline
+Reports Table & Filterable table of all sidewalk assessments \\
+\hline
+Admin Panel & Manage users, approve reports, export data \\
+\hline
+Rover Logs Viewer & Optionally review raw logs from rover (for debugging and calibration) \\
 \hline
 \end{longtable}
 
-\newpage
-
-\section{Introduction}
-\subsection{Purpose}
-[Explain the purpose of this software]
-
-\subsection{Intended Audience}
-[Instructors, Developers, End-users]
-
-\subsection{Overview}
-[A summary of what's in the document]
-
-\section{System Architecture}
-\subsection{Workflow}
-[Add your workflow diagram here - use "includegraphic" if you have a file]
-
-\subsection{Site Breakdown}
-[Explain the main parts/pages/tools of the software]
-
 \section{User Interface}
+
 \subsection{How to Use}
-[How does the user interact with the system?]
+\begin{itemize}
+  \item Field testers log in, upload new field data from rover memory
+  \item City officials view the interactive map, click points for slope, displacement, and photo data
+  \item Filter by slope severity or ADA compliance
+  \item Admins can export filtered reports for city repair scheduling
+\end{itemize}
 
 \subsection{Database Explanation}
-[How the data is stored, accessed, and managed]
+\textbf{Tables:}
+\begin{itemize}
+  \item \texttt{users}: id, username, email, password\_hash, role (admin/user)
+  \item \texttt{assessments}: id, user\_id, gps\_lat, gps\_lon, slope\_cross, slope\_run, displacement\_vert, displacement\_horiz, photo\_url, timestamp, status
+  \item \texttt{collisions} (optional): id, timestamp, rover\_id, location, obstacle\_type, avoided
+\end{itemize}
+
+Each data entry is associated with the rover's GPS location and timestamp, enabling longitudinal sidewalk tracking.
 
 \section{Glossary}
-\begin{itemize}
-  \item UI - User Interface
-  \item API - Application Programming Interface
-  \item DB - Database
-\end{itemize}
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Term} & \textbf{Definition} \\
+\hline
+UI & User Interface \\
+\hline
+API & Application Programming Interface \\
+\hline
+ADA & Americans with Disabilities Act \\
+\hline
+DB & Database \\
+\hline
+GPS & Global Positioning System \\
+\hline
+Slope & Gradient of sidewalk in vertical/horizontal direction \\
+\hline
+Collision Avoidance & Rover feature to navigate around obstacles autonomously \\
+\hline
+\end{longtable}
 
 \section{References}
 \begin{itemize}
   \item \url{https://github.com/Jonjy/CS3338_Group1}
-  \item \url{https://www.overleaf.com}
+  \item \url{https://ascent.cysun.org/project/project/view/222}
+  \item \url{https://www.ada.gov/}
+  \item \url{https://leafletjs.com}
+  \item \url{https://flask.palletsprojects.com}
 \end{itemize}
+
+\section{Versions Table}
+\begin{longtable}{|p{2cm}|p{3cm}|p{10cm}|}
+\hline
+\textbf{Version} & \textbf{Date} & \textbf{Description} \\
+\hline
+1.0 & 2025-04-25 & Initial draft \\
+\hline
+1.1 & TBD & Snapshot 2 – Map dashboard integration \\
+\hline
+1.2 & TBD & Snapshot 3 – Admin tools + rover collision data \\
+\hline
+1.3 & TBD & Snapshot 4 – Final polish + export features \\
+\hline
+\end{longtable}
 
 \end{document}
