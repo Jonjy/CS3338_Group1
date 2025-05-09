@@ -1,0 +1,22 @@
+services:
+  boe-sidewalk-ui:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - boe-sidewalk-network
+  boe-sidewalk-ws:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    networks:
+      - boe-sidewalk-network
+
+networks:
+  boe-sidewalk-network:
+    driver: bridge
+    
